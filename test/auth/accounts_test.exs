@@ -396,7 +396,7 @@ defmodule Auth.AccountsTest do
 
   describe "confirm_user/1" do
     setup do
-      user = user_fixture()
+      user = user_fixture(%{}, confirmed: false)
 
       token =
         extract_user_token(fn url ->
