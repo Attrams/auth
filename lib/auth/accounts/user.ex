@@ -153,4 +153,11 @@ defmodule Auth.Accounts.User do
   def is_blocked?(user) do
     user.is_blocked
   end
+
+  @doc """
+  A user changeset for blocking / unblocking a user.
+  """
+  def block_user_changeset(user, should_block?) do
+    user |> cast(%{is_blocked: should_block?}, [:is_blocked])
+  end
 end
