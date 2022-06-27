@@ -356,4 +356,25 @@ defmodule Auth.Accounts do
       {:error, :user, changeset, _} -> {:error, changeset}
     end
   end
+
+  @doc """
+  Block a user and delete any tokens assigned to them
+  """
+  def block_user(user) do
+    {:ok, %{tokens: _token, user: user}} = user |> block_user_multi() |> Repo.transaction()
+
+    {:ok, user}
+  end
+
+  defp block_user_multi(user) do
+    changeset = user |> User.block_user_changeset(true)
+
+    Ecto.Multi.new()
+    |> Ecto.Multi.update(:user, changeset)
+    |> Ecto.Multi.delete_all(:tokens, UserToken.user_and_contexts_query(user, :all))
+  end
+
+  def unblock_user(user) do
+    user |> User.block_user_changeset(false) |> Repo.update()
+  end
 end
