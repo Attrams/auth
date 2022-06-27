@@ -45,6 +45,7 @@ defmodule Auth.Accounts do
     cond do
       !User.valid_password?(user, password) -> {:error, :bad_username_or_password}
       !User.is_confirmed?(user) -> {:error, :not_confirmed}
+      User.is_blocked?(user) -> {:error, :user_blocked}
       true -> {:ok, user}
     end
   end
