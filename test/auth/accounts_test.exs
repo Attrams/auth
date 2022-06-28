@@ -43,6 +43,15 @@ defmodule Auth.AccountsTest do
       assert {:error, :not_confirmed} ==
                Accounts.get_user_by_email_and_password(user.email, valid_user_password())
     end
+
+    test "does not return user if they have been blocked" do
+      user = user_fixture()
+
+      Accounts.block_user(user)
+
+      assert {:error, :user_blocked} ==
+               Accounts.get_user_by_email_and_password(user.email, valid_user_password())
+    end
   end
 
   describe "get_user!/1" do
