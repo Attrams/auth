@@ -537,4 +537,37 @@ defmodule Auth.AccountsTest do
       refute inspect(%User{password: "123456"}) =~ "password: \"123456\""
     end
   end
+
+  describe "block_user/1" do
+    setup do
+      user = user_fixture()
+      token = Accounts.generate_user_session_token(user)
+
+      %{user: user, token: token}
+    end
+
+    test "sets the is_blocked flag to true and removes any token belonging to the user", %{
+      user: user,
+      token: token
+    } do
+      assert {:ok, user} = Accounts.block_user(user)
+
+      assert user.is_blocked == true
+
+      refute Accounts.get_user_by_session_token(token)
+    end
+  end
+
+  describe "unblock_user/1" do
+    setup do
+      {:ok, user} = user_fixture() |> Accounts.block_user()
+
+      %{user: user}
+    end
+
+    test "sets the is_blocked flag to false ", %{user: user} do
+      assert {:ok, user} = Accounts.unblock_user(user)
+      assert user.is_blocked == false
+    end
+  end
 end
